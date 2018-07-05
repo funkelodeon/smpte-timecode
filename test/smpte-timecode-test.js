@@ -89,6 +89,25 @@ describe('Constructor tests', function(){
         expect(Timecode(1078920*2,59.94,true).toString()).to.be('10:00:00;00'); 
         expect(Timecode(3597*2+1,59.94,true).toString()).to.be('00:01:59;59'); 
     });
+    it ('drop-frame counts (exact framerate)', function() {
+        expect(Timecode('00:10:00;00',30000/1001).frameCount).to.be(17982);
+        expect(Timecode('00:10:00;00',60000/1001).frameCount).to.be(17982*2);
+        expect(Timecode('10:00:00;00',30000/1001).frameCount).to.be(1078920);
+        expect(Timecode('10:00:00;00',60000/1001).frameCount).to.be(1078920*2);
+        expect(function(){Timecode('00:02:00;00',30000/1001)}).to.throwError();
+        expect(function(){Timecode('00:02:00;02',30000/1001)}).to.not.throwError();
+        expect(function(){Timecode('00:02:00;00',60000/1001)}).to.throwError();
+        expect(function(){Timecode('00:02:00;02',60000/1001)}).to.throwError();
+        expect(function(){Timecode('00:02:00;04',60000/1001)}).to.not.throwError();
+        expect(Timecode('00:01:59;29',30000/1001).frameCount).to.be(3597);
+        expect(Timecode('00:01:59;59',60000/1001).frameCount).to.be(3597*2+1);
+        expect(Timecode(17982,30000/1001,true).toString()).to.be('00:10:00;00'); 
+        expect(Timecode(1078920,30000/1001,true).toString()).to.be('10:00:00;00'); 
+        expect(Timecode(3597,30000/1001,true).toString()).to.be('00:01:59;29'); 
+        expect(Timecode(17982*2,60000/1001,true).toString()).to.be('00:10:00;00'); 
+        expect(Timecode(1078920*2,60000/1001,true).toString()).to.be('10:00:00;00'); 
+        expect(Timecode(3597*2+1,60000/1001,true).toString()).to.be('00:01:59;59');
+    });
     it ('non-drop-frame counts', function() {
         expect(Timecode('00:10:00:00',25).frameCount).to.be(15000);
         expect(Timecode('10:00:00:00',25).frameCount).to.be(900000);

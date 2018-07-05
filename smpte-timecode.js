@@ -46,7 +46,7 @@
             // make sure the numbers make sense
             if ( this.hours>23 || this.minutes>59 || this.seconds>59 || 
                  this.frames>=this.frameRate ||
-                 (this.dropFrame && this.seconds==0 && this.minutes%10 && this.frames<2*(this.frameRate/29.97) )
+                 (this.dropFrame && this.seconds==0 && this.minutes%10 && this.frames<2*(Math.floor(this.frameRate/29.97)) )
             ) throw new Error("Invalid timecode")
         }
         else if (typeof timeCode == 'object' && timeCode instanceof Date) {
@@ -82,7 +82,7 @@
         var fc = this.frameCount;
         // adjust for dropFrame
         if (this.dropFrame) {
-            var df = (this.frameRate==29.97 || this.frameRate==30000/10001) ? 2 : 4; // 59.94 skips 4 frames
+            var df = (this.frameRate==29.97 || this.frameRate==30000/1001) ? 2 : 4; // 59.94 skips 4 frames
             var d = Math.floor(this.frameCount / (17982*df/2));
             var m = this.frameCount % (17982*df/2);
             if (m<df) m=m+df;
@@ -103,7 +103,7 @@
         this.frameCount = (this.hours*3600 + this.minutes*60 + this.seconds) * Math.round(this.frameRate) + this.frames;
         if (this.dropFrame) {
             var totalMinutes = this.hours*60 + this.minutes;
-            var df = (this.frameRate==29.97 || this.frameRate==30000/10001) ? 2 : 4;
+            var df = (this.frameRate==29.97 || this.frameRate==30000/1001) ? 2 : 4;
             this.frameCount = this.frameCount - df * (totalMinutes - Math.floor(totalMinutes/10));
         }
     };
