@@ -19,13 +19,14 @@
         if (typeof frameRate == 'undefined') this.frameRate = 29.97;
         else if (typeof frameRate == 'number' && frameRate>0) this.frameRate = frameRate;
         else throw new Error('Number expected as framerate');
-        if (this.frameRate!=23.976 && this.frameRate!=24 && this.frameRate!=25 && this.frameRate!=29.97 && this.frameRate!=30 &&
-            this.frameRate!=50 && this.frameRate!=59.94 && this.frameRate!=60
-        ) throw new Error('Unsupported framerate');
+        // Framerate is just a number...
+        // if (this.frameRate!=23.976 && this.frameRate!=24 && this.frameRate!=25 && this.frameRate!=29.97 && this.frameRate!=30 &&
+        //     this.frameRate!=50 && this.frameRate!=59.94 && this.frameRate!=60000/1001 && this.frameRate!=60
+        // ) throw new Error('Unsupported framerate');
         
         // If we are passed dropFrame, we need to use it
         if (typeof dropFrame === 'boolean') this.dropFrame = dropFrame;
-        else this.dropFrame = (this.frameRate==29.97 || this.frameRate==59.94); // by default, assume DF for 29.97 and 59.94, NDF otherwise
+        else this.dropFrame = (this.frameRate==29.97 || this.frameRate==30000/1001 || this.frameRate==59.94 || this.frameRate==60000/1001); // by default, assume DF for 29.97 and 59.94, NDF otherwise
 
         // Now either get the frame count, string or datetime        
         if (typeof timeCode == 'number') {
@@ -60,7 +61,7 @@
         }
 
         // Make sure dropFrame is only for 29.97 & 59.94
-        if (this.dropFrame && this.frameRate!=29.97 && this.frameRate!=59.94) {
+        if (this.dropFrame && this.frameRate!=29.97 && this.frameRate!=30000/1001 && this.frameRate!=59.94 && this.frameRate!=60000/1001) {
             throw new Error('Drop frame is only supported for 29.97 and 59.94 fps');
         }
 
@@ -81,7 +82,7 @@
         var fc = this.frameCount;
         // adjust for dropFrame
         if (this.dropFrame) {
-            var df = this.frameRate==29.97 ? 2 : 4; // 59.94 skips 4 frames
+            var df = (this.frameRate==29.97 || this.frameRate==30000/10001) ? 2 : 4; // 59.94 skips 4 frames
             var d = Math.floor(this.frameCount / (17982*df/2));
             var m = this.frameCount % (17982*df/2);
             if (m<df) m=m+df;
@@ -102,7 +103,7 @@
         this.frameCount = (this.hours*3600 + this.minutes*60 + this.seconds) * Math.round(this.frameRate) + this.frames;
         if (this.dropFrame) {
             var totalMinutes = this.hours*60 + this.minutes;
-            var df = this.frameRate == 29.97 ? 2 : 4;
+            var df = (this.frameRate==29.97 || this.frameRate==30000/10001) ? 2 : 4;
             this.frameCount = this.frameCount - df * (totalMinutes - Math.floor(totalMinutes/10));
         }
     };

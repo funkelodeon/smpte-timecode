@@ -20,7 +20,7 @@ describe('Constructor tests', function(){
 
     it ('incorrect initializers throw', function() {
         expect(function(){Timecode(1,-1)}).to.throwException();
-        expect(function(){Timecode(1,66)}).to.throwException();
+        // expect(function(){Timecode(1,66)}).to.throwException();
         expect(function(){Timecode('dewdew');}).to.throwException();
         expect(function(){Timecode('dewdew');}).to.throwException();
         expect(function(){Timecode({w:3});}).to.throwException();
@@ -57,13 +57,17 @@ describe('Constructor tests', function(){
         expect(Timecode(1).dropFrame).to.be(true);
         expect(Timecode(1).frameRate).to.be(29.97);
         expect(Timecode(1,29.97).dropFrame).to.be(true);
+        expect(Timecode(1,30000/1001).dropFrame).to.be(true);
         expect(Timecode(1,59.94).dropFrame).to.be(true);
+        expect(Timecode(1,60000/1001).dropFrame).to.be(true);
         expect(Timecode(1,25).dropFrame).to.be(false);
     });
 
     it ('drop-frame only for 29.97 and 59.94', function() {
         expect(function(){Timecode(0,30,true)}).to.throwException();
         expect(function(){Timecode(0,59.94,true)}).to.not.throwException();
+        expect(function(){Timecode(0,30000/1001,true)}).to.not.throwException();
+        expect(function(){Timecode(0,60000/1001,true)}).to.not.throwException();
     });
 
     it ('drop-frame counts', function() {
